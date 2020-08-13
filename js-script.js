@@ -33,7 +33,6 @@ function myFunction() {
     var mangaListData = "";
     var categoriesListData = "";
     var trackersListData = "";
-    var sourceLink = "";
 
     //Display Version Number
     displayData += "Backup DateTime " + "<small>" + "(YYYY-MM-DD HH-MM) : " + "</small><br/>" + backUpDate + "<br/>" + "<br/>";
