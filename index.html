@@ -11,26 +11,66 @@
         integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
 
     <title>Tachiyomi Backup Viewer</title>
+    <style>
+        body {
+            padding: 22px;
+            background-color: #ececec;
+            color: #222831;
+        }
+
+        .dark-mode {
+            background-color: #222831;
+            color: white;
+        }
+    </style>
 </head>
 
 <body>
     <div class="container">
-        <center>
-            <h2>Tachiyomi Backup Details</h2>
-        </center>
+        <div class="row">
+            <div class="col-sm-10">
+                <h4>Tachiyomi Backup Viewer</h4>
+            </div>
+            <div class="col-sm-2">
+                <button onclick="toggleTheme()"> Switch Theme</button>
+            </div>
+        </div>
+
+
+
         <hr>
         <center>
             <input type="file" id="selectFiles" value="Import" />
             <button id="import">Import</button>
         </center>
-
+        <hr>
         <textarea id="result" style="display:none;">
-    </textarea>
+        </textarea>
 
         <p id="datetime"></p>
-        <p id="tachiyomiBackupDisplay"></p>
+
+        <div class="row">
+            <div class="col-sm-3">
+                <p id="tachiyomiDatetimeDisplay"></p>
+            </div>
+            <div class="col-sm-3">
+                <p id="tachiyomiVersionDisplay"></p>
+            </div>
+            <div class="col-sm-3">
+                <p id="tachiyomiCategoryDisplay"></p>
+            </div>
+            <div class="col-sm-3">
+                <p id="tachiyomiExtensionDisplay"></p>
+            </div>
+        </div>
+
+        <p id="tachiyomiMangaCountDisplay"></p>
+        <div class="row" id="tachiyomiMangaInfoDisplay">
+        </div>
+
 
     </div>
+
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
@@ -43,6 +83,11 @@
         integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV"
         crossorigin="anonymous"></script>
     <script src="js-script.js"></script>
+
+
+    <script>
+
+    </script>
 </body>
 
 </html>
