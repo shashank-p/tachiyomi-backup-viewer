@@ -1,12 +1,13 @@
 document.getElementById('import').onclick = function () {
     var files = document.getElementById('selectFiles').files;
-    //var filename = files[0].name;
-    var dateTime = files[0].name.substring(10, 20) + " " + files[0].name.substring(21, 26);
-    document.getElementById('datetime').value = dateTime;
 
     if (files.length <= 0) {
+        alert("Please Select Json Backup File");
         return false;
     }
+
+    var dateTime = files[0].name.length > 26 ? files[0].name.substring(10, 20) + " " + (files[0].name.substring(21, 26)).replace("-", ":") : 'Not Available';
+    document.getElementById('datetime').value = dateTime;
 
     var fr = new FileReader();
 
@@ -15,16 +16,16 @@ document.getElementById('import').onclick = function () {
         var formatted = JSON.stringify(result, null, 2);
         //console.log(result);
         document.getElementById('result').value = e.target.result;
-        myFunction();
+        processJsonData();
     }
 
     fr.readAsText(files.item(0));
 
 };
 
-function toggleTheme() {
+function switchTheme() {
     var element = document.body;
-    console.log(element.classList.length)
+    //console.log(element.classList.length)
     element.classList.toggle("dark-mode");
 
     var elems = document.querySelectorAll(".myClass");
@@ -41,7 +42,7 @@ function toggleTheme() {
     }
 }
 
-function myFunction() {
+function processJsonData() {
 
     var txt = document.getElementById("result").value;
     var backUpDate = document.getElementById("datetime").value;
@@ -60,12 +61,15 @@ function myFunction() {
     displayVersionData += "<b>Version : </b>" + "<br/>" + obj.version + "<br/>" + "<br/>";
     //*************************************************************
     if (typeof obj.categories != "undefined") {
+        if (obj.categories.length == 0) {
+            allCategoriesListData = "No Categories Found" + "<br/>";
+        }
         //To Get All Category List
         for (var c = 0; c < obj.categories.length; c++) {
-            allCategoriesListData += c + 1 + ". " + obj.categories[c][0] + "<br/>";
+            allCategoriesListData += (c + 1) + ". " + obj.categories[c][0] + "<br/>";
         }
     } else {
-        allCategoriesListData = "Not Available";
+        allCategoriesListData = "No Categories Found" + "<br/>";
     }
 
     //Display All Categories
@@ -73,13 +77,16 @@ function myFunction() {
     allCategoriesListData = "";
     //*************************************************************
     if (typeof obj.extensions != "undefined") {
+        if (obj.extensions.length == 0) {
+            allExtensionsListData = "No Extensions Found" + "<br/>";
+        }
         //To Get All Extensions List
         for (var e = 0; e < obj.extensions.length; e++) {
             obj.extensions[e] = obj.extensions[e].split(":");
             allExtensionsListData += e + 1 + ". " + obj.extensions[e][1] + "<br/>";
         }
     } else {
-        allExtensionsListData = "Not Available";
+        allExtensionsListData = "No Extensions Found" + "<br/>";
     }
 
     //Display All Extensions
@@ -106,21 +113,16 @@ function myFunction() {
                     break;
                 case 2:
                     mangaKeyTitles = "<b>Source : </b>";
-                    for (var je = 0; je < obj.extensions.length; je++) {
-                        if (AllMangas.manga[j] == obj.extensions[je][0]) {
-                            mangaListData = mangaKeyTitles + obj.extensions[je][1] + "<br/>";
+                    if (typeof obj.extensions != "undefined") {
+                        for (var je = 0; je < obj.extensions.length; je++) {
+                            if (AllMangas.manga[j] == obj.extensions[je][0]) {
+                                mangaListData = mangaKeyTitles + obj.extensions[je][1] + "<br/>";
+                            }
                         }
+                    } else {
+                        mangaListData = mangaKeyTitles + "Obsoleted (N/A)" + "<br/>";
                     }
                     break;
-                /* case 3:
-                     mangaKeyTitles = "<b>N/A : </b>";
-                     mangaListData = mangaKeyTitles + AllMangas.manga[j]; 
-                    break;*/
-                /* case 4:
-                      mangaKeyTitles = "<b>N/A : </b>";
-                      mangaListData = mangaKeyTitles + AllMangas.manga[j]; 
-                     break;*/
-
             }
             //Display Manga Details
             displayMangaInfoData += mangaListData;
@@ -131,9 +133,14 @@ function myFunction() {
         displayMangaInfoData += "<b>Chapters Read: </b>" + (typeof AllMangas.chapters != "undefined" ? AllMangas.chapters.length : 0) + "<br/>";
         //*****************************************************************
         //To get Category list of Manga
-        for (var k = 0; k < AllMangas.categories.length; k++) {
-            categoriesListData += AllMangas.categories[k] + ", ";
+        if (typeof AllMangas.categories != "undefined") {
+            for (var k = 0; k < AllMangas.categories.length; k++) {
+                categoriesListData += AllMangas.categories[k] + ", ";
+            }
+        } else {
+            categoriesListData = "No Categories Found"
         }
+
         //Display Categories Details
         displayMangaInfoData += "<b>Categories : </b>" + categoriesListData.replace(/,\s*$/, "") + "<br/>";
         categoriesListData = "";
@@ -142,15 +149,17 @@ function myFunction() {
             //To get Tracker list of Manga
             for (var l = 0; l < AllMangas.track.length; l++) {
                 const trackersList =
-                    (AllMangas.track[l].u.includes("myanimelist") ? "<a href=" + AllMangas.track[l].u + " target='_blank'>Myanimelist</a>" : "") ||
-                    (AllMangas.track[l].u.includes("anilist") ? "<a href=" + AllMangas.track[l].u + " target='_blank'>Anilist</a>" : "") ||
-                    (AllMangas.track[l].u.includes("kitsu") ? "<a href=" + AllMangas.track[l].u + " target='_blank'>Kitsu</a>" : "");
+                    /* if not for Internet Explorer 
+                    (AllMangas.track[l].u.includes("myanimelist") ? "<a href=" + AllMangas.track[l].u + " target='_blank'>Myanimelist</a>" : "") */
+                    (AllMangas.track[l].u.indexOf("myanimelist") !== -1 ? "<a href=" + AllMangas.track[l].u + " target='_blank'>Myanimelist</a>" : "") ||
+                    (AllMangas.track[l].u.indexOf("anilist") !== -1 ? "<a href=" + AllMangas.track[l].u + " target='_blank'>Anilist</a>" : "") ||
+                    (AllMangas.track[l].u.indexOf("kitsu") !== -1 ? "<a href=" + AllMangas.track[l].u + " target='_blank'>Kitsu</a>" : "");
 
                 //List of All trackers for Particular Manga          
                 trackersListData += trackersList + ", ";
             }
         } else {
-            const trackersList = "Not Available";
+            const trackersList = "No Trackers Found";
             trackersListData += trackersList;
         }
 
@@ -168,3 +177,22 @@ function myFunction() {
     document.getElementById("tachiyomiMangaInfoDisplay").innerHTML = displayMangaInfoData;
     //*************************************************************   
 }
+
+/*Scroll to top when arrow up clicked BEGIN*/
+$(window).scroll(function () {
+    var height = $(window).scrollTop();
+    if (height > 100) {
+        $('#back2Top').fadeIn();
+    } else {
+        $('#back2Top').fadeOut();
+    }
+});
+$(document).ready(function () {
+    $("#back2Top").click(function (event) {
+        event.preventDefault();
+        $("html, body").animate({ scrollTop: 0 }, "slow");
+        return false;
+    });
+
+});
+ /*Scroll to top when arrow up clicked END*/
