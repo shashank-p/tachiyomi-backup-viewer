@@ -40,6 +40,8 @@ function switchTheme() {
             cardElement.classList.add("bg-dark");
         }
     }
+    document.getElementById("selectFiles").focus();
+
 }
 
 function processJsonData() {
@@ -54,16 +56,25 @@ function processJsonData() {
     var categoriesListData = "";
     var trackersListData = "";
 
-    //Display Version Number
+    //Display Date Time
     displayDatetimeData += "<b>Backup DateTime :</b>" + "<br/<small><i>" + "(YYYY-MM-DD HH-MM) </i> " + "</small><br/>" + backUpDate + "<br/>" + "<br/>";
     //*************************************************************
     //Display Version Number
     displayVersionData += "<b>Version : </b>" + "<br/>" + obj.version + "<br/>" + "<br/>";
     //*************************************************************
     if (typeof obj.categories != "undefined") {
-        if (obj.categories.length == 0) {
-            allCategoriesListData = "No Categories Found" + "<br/>";
+        //Check if there's any manga without user defined category then it's Default category
+        for (var cd = 0; cd < obj.mangas.length; cd++) {
+            if (typeof obj.mangas[cd].categories == "undefined") {
+                allCategoriesListData = "0. Default" + "<br/>";
+            }
         }
+
+        //If there's blank category then it is Default category
+        if (obj.categories.length == 0) {
+            allCategoriesListData = "1. Default" + "<br/>";
+        }
+
         //To Get All Category List
         for (var c = 0; c < obj.categories.length; c++) {
             allCategoriesListData += (c + 1) + ". " + obj.categories[c][0] + "<br/>";
@@ -73,7 +84,7 @@ function processJsonData() {
     }
 
     //Display All Categories
-    displayCategoryData += "<b>Categories (" + (typeof obj.categories != "undefined" ? obj.categories.length : 0) + ") : </b><br/>" + allCategoriesListData + "<br/>";
+    displayCategoryData += "<b>Categories (" + (typeof obj.categories != "undefined" ? (obj.categories.length == 0 ? 1 : obj.categories.length) : 0) + ") : </b><br/>" + allCategoriesListData + "<br/>";
     allCategoriesListData = "";
     //*************************************************************
     if (typeof obj.extensions != "undefined") {
@@ -138,7 +149,7 @@ function processJsonData() {
                 categoriesListData += AllMangas.categories[k] + ", ";
             }
         } else {
-            categoriesListData = "No Categories Found"
+            categoriesListData = "Default";
         }
 
         //Display Categories Details
