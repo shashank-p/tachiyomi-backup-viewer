@@ -1,3 +1,22 @@
+function getExtensionSourceName(srcList) {
+    srcList = srcList.split(":");
+
+    var jsonSourceList = $.ajax({
+        url: 'https://gist.githubusercontent.com/shashank-p/39b5d5ea9aeb523b7d3a97451d838f9d/raw/91828fc5dd6d716e04aea6ab22e0aebe8dc9f5d2/tachiyomi-source-details.json',
+        async: false
+    }).responseText;
+
+    var sortedSourceList = JSON.parse(jsonSourceList);
+    for (var i = 0; i < sortedSourceList.extensions.length; i++) {
+        var counter = sortedSourceList.extensions[i];
+        if (counter.id == srcList[0] && srcList[1]) {
+            return (counter.source + ' (' + counter.lang + ')');
+        } else if (counter.id == srcList[0] && !srcList[1]) {
+            return (counter.source + ' (' + counter.lang + ') Missing');
+        }
+    }
+}
+
 document.getElementById('import').onclick = function () {
     var files = document.getElementById('selectFiles').files;
 
@@ -93,8 +112,8 @@ function processJsonData() {
         }
         //To Get All Extensions List
         for (var e = 0; e < obj.extensions.length; e++) {
-            obj.extensions[e] = obj.extensions[e].split(":");
-            allExtensionsListData += e + 1 + ". " + obj.extensions[e][1] + "<br/>";
+            srcName = getExtensionSourceName(obj.extensions[e]);
+            allExtensionsListData += e + 1 + ". " + srcName + "<br/>";
         }
     } else {
         allExtensionsListData = "No Extensions Found" + "<br/>";
